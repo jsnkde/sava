@@ -1,0 +1,14 @@
+{% load i18n %}
+<title>{% block head_title %}Выход{% endblock %}</title>
+
+{% block content %}
+<form method="post" action="{% url 'account_logout' %}">
+  {% csrf_token %}
+  {% if redirect_field_value %}
+  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+  {% endif %}
+  <button type="submit">Подтвердить выход</button>
+</form>
+
+
+{% endblock %}
