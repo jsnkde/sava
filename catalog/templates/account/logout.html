@@ -1,14 +1,25 @@
 {% load i18n %}
-<title>{% block head_title %}Выход{% endblock %}</title>
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>{% block title %}Выход{% endblock %}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-{% block content %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
 <form method="post" action="{% url 'account_logout' %}">
   {% csrf_token %}
   {% if redirect_field_value %}
   <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
   {% endif %}
-  <button type="submit">Подтвердить выход</button>
+  <div>&nbsp;</div>
+  <div class='container-fluid'>
+  	<button type="submit" class='btn btn-primary btn-lg'>Подтвердить выход</button>
+  </div>
 </form>
-
-
-{% endblock %}
+</body>

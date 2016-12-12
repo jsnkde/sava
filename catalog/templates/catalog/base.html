@@ -15,7 +15,7 @@
 
 </head>
 <body>
-<nav class="navbar navbar-default">
+<nav class="navbar navbar-inverse">
   <div class="container-fluid">
     <div class="navbar-header">
       <!-- <a class="navbar-brand" href="/">Сава</a> -->
@@ -26,6 +26,7 @@
 				<a href="{% provider_login_url 'facebook' method='js_sdk' next=request.path %}"><img src='{% static "catalog/img/facebook.png" %}' alt='Facebook' height="40" /></a>
 				<a href="{% provider_login_url 'twitter' method='js_sdk' next=request.path %}"><img src='{% static "catalog/img/twitter.png" %}' alt='Twitter' height="40" /></a>
 				<a href="{% provider_login_url 'google' method='js_sdk' next=request.path %}"><img src='{% static "catalog/img/google.png" %}' alt='Google' height="40" /></a>
+				<a href="{% provider_login_url 'vk' method='js_sdk' next=request.path %}"><img src='{% static "catalog/img/vk.png" %}' alt='VK' height="40" /></a>
 			</span></li>
 		{% else %}	
 			<li><a>			

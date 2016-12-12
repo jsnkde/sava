@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-SITE_ID = '2'
+SITE_ID = '3'
 
 # Application definition
 
@@ -91,9 +91,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'sava',
         'USER': 'nkoval',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
+        'PASSWORD': 'entro4ti',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -120,9 +120,6 @@ AUTHENTICATION_BACKENDS = (
         'django.contrib.auth.backends.ModelBackend',
         'allauth.account.auth_backends.AuthenticationBackend',
     )
-
-FACEBOOK_APP_ID = '213949978744885'
-FACEBOOK_API_SECRET = '7f090d69d306f54ed240c7350fe9bee9'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
