@@ -33,6 +33,7 @@ SITE_ID = '3'
 
 INSTALLED_APPS = [
     'catalog',
+    'taggit',
 
     # Social auth
     'django.contrib.sites',
@@ -91,9 +92,14 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'sava',
         'USER': 'nkoval',
-        'PASSWORD': 'entro4ti',
-        'HOST': 'localhost',
-        'PORT': '5432',
+
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
+
+        # 'PASSWORD': 'entro4ti',
+        # 'HOST': 'localhost',
+        # 'PORT': '5432',
     }
 }
 
@@ -121,6 +127,8 @@ AUTHENTICATION_BACKENDS = (
         'allauth.account.auth_backends.AuthenticationBackend',
     )
 
+AUTH_USER_MODEL = 'catalog.User'
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
@@ -145,3 +153,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 ACCOUNT_ADAPTER = "catalog.views.SocialAccountAdapter"
+
+TAGGIT_CASE_INSENSITIVE = True
+
