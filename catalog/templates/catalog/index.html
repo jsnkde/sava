@@ -7,19 +7,27 @@
 {% block sidebar %}
     <table class="table table-condensed">
       {% for tag in tags %}
-	    	<tr><td><a href='{% url "catalog:index" %}?tag={{ tag.name }}'>{{ tag.name }}</a> ({{ tag.count }})</td></tr>
+	    	<tr><td><a href='{% url "catalog:index" %}?search={{ tag.name }}'>{{ tag.name }}</a> ({{ tag.count }})</td></tr>
 	    {% endfor %} 
 	</table>
 {% endblock %}
 
 {% block main %}
 	    <table class="table table-condensed">
+	    	<tr><td>
+	    		<form>
+				<div class="input-group">
+					<input id="search" type="text" class="form-control" name="search" placeholder="одежда, техника, игрушки">
+					<span class="input-group-addon"><button class="submit-glyph glyphicon glyphicon-search"></button></span>
+				</div>
+			</form>
+	    	</td></tr>
 	    {% for item in items %}
 	    <tr><td><table class="table table-condensed">
 	    	<tr><td><a>{{ item.description }}</a></td></tr>
 	    	<tr><td>
 	    		{% for tag in item.tags.all %}
-	    			<a href='{% url "catalog:index" %}?tag={{ tag.name }}' class="small">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+	    			<a href='{% url "catalog:index" %}?search={{ tag.name }}' class="small">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
 	    		{% endfor %}
 	    	</td></tr>
 	    </table></td></tr>

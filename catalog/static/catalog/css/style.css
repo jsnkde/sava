@@ -22,3 +22,10 @@
 .table th, .table td { 
      border-top: none !important; 
  }
+
+ .submit-glyph {
+  	background: transparent;
+    border: 0px;
+    padding: 0;
+    outline: 0;
+}
