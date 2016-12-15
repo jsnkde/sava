@@ -17,6 +17,7 @@ class AbstractClass(models.Model):
 
 class Location(models.Model):
 	REGIONS = (
+		( 0, None),
 		( 1, u"Адыгея"),
 		( 2, u"Башкортостан"),
 		( 3, u"Бурятия"),
@@ -109,6 +110,9 @@ class Location(models.Model):
 
 	def __unicode__(self):
 		return self.name
+
+	class Meta:
+		ordering = ['region', 'name']
 
 
 class User(AbstractUser):

@@ -35,7 +35,9 @@
 
 			<ul class="dropdown-menu">
 			{% for place in locations %}
-	          <li><a href="" onclick="document.getElementById('location').value = {{ place.id }}; document.forms[0].submit(); return false;">{{ place.name }}&nbsp;{% if place.name == location.name %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</a></li>
+				<!-- {% load taglib %}
+				{% ifchanged %}<li class='disabled'><i>{{ place.region|region_to_str }}</i></li>{% endifchanged %} -->
+				<li><a href="" onclick="document.getElementById('location').value = {{ place.id }}; document.forms[0].submit(); return false;">{{ place.name }}&nbsp;{% if place.name == location.name %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</a></li>
 			{% endfor %}
 	        </ul>
     	</li>
