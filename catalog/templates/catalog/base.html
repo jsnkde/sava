@@ -71,6 +71,18 @@
     </ul>
   </div>
 </nav>
-{% block content %} {% endblock %}
+
+<div class="container-fluid">
+  <div class="row content">
+    <div class="col-sm-3 sidenav">
+    {% block sidebar %}{% endblock %}
+    </div>
+
+    <div class="col-sm-9">
+	    {% block main %}{% endblock %}
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

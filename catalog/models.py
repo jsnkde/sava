@@ -129,3 +129,6 @@ class Item(AbstractClass):
 
 	tags = TaggableManager()
 
+	def __unicode__(self):
+		return self.description[:40]
+

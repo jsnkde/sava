@@ -2,5 +2,33 @@
 {% block title %} Главная {% endblock %}
 
 {% block content %} 
-<h1> hello </h1>
+
+
+{% block sidebar %}
+    <table class="table table-condensed">
+      {% for tag in tags %}
+	    	<tr><td><a href='{% url "catalog:index" %}?tag={{ tag.name }}'>{{ tag.name }}</a> ({{ tag.count }})</td></tr>
+	    {% endfor %} 
+	</table>
+{% endblock %}
+
+{% block main %}
+	    <table class="table table-condensed">
+	    {% for item in items %}
+	    <tr><td><table class="table table-condensed">
+	    	<tr><td><a>{{ item.description }}</a></td></tr>
+	    	<tr><td>
+	    		{% for tag in item.tags.all %}
+	    			<a href='{% url "catalog:index" %}?tag={{ tag.name }}' class="small">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+	    		{% endfor %}
+	    	</td></tr>
+	    </table></td></tr>
+	    {% endfor %}	
+	    </table>
+{% endblock %}
+
+<footer class="container-fluid">
+  <p></p>
+</footer>
+
 {% endblock %}
