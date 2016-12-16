@@ -1,9 +1,6 @@
 {% extends 'catalog/base.html' %}
 {% block title %} Главная {% endblock %}
 
-{% block content %} 
-
-
 {% block sidebar %}
     <table class="table table-condensed">
       {% for tag in tags %}
@@ -15,7 +12,7 @@
 {% block main %}
 	    <table class="table table-condensed">
 	    	<tr><td>
-	    		<form>
+	    		<form method='GET' action=''>
 				<div class="input-group">
 					<input id="search" type="text" class="form-control" name="search" placeholder="одежда, техника, игрушки">
 					<span class="input-group-addon"><button class="submit-glyph glyphicon glyphicon-search"></button></span>
@@ -24,7 +21,7 @@
 	    	</td></tr>
 	    {% for item in items %}
 	    <tr><td><table class="table table-condensed">
-	    	<tr><td><a>{{ item.description }}</a></td></tr>
+	    	<tr><td><a href="{% url 'catalog:detail' item.id %}">{{ item.description }}</a></td></tr>
 	    	<tr><td>
 	    		{% for tag in item.tags.all %}
 	    			<a href='{% url "catalog:index" %}?search={{ tag.name }}' class="small">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
@@ -38,5 +35,3 @@
 <footer class="container-fluid">
   <p></p>
 </footer>
-
-{% endblock %}

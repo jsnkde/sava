@@ -23,7 +23,7 @@
     </div>
     <ul class="nav navbar-nav pull-right">
     	<li class="dropdown">
-			<a class='dropdown-toggle' data-toggle='dropdown'>
+			<a class='dropdown-toggle' data-toggle='dropdown' style="cursor:pointer;">
 				<span class="glyphicon glyphicon-globe"></span>&nbsp;{{ location.name }}
 				<span class="caret"></span>
 			</a>
@@ -37,7 +37,9 @@
 			{% for place in locations %}
 				<!-- {% load taglib %}
 				{% ifchanged %}<li class='disabled'><i>{{ place.region|region_to_str }}</i></li>{% endifchanged %} -->
-				<li><a href="" onclick="document.getElementById('location').value = {{ place.id }}; document.forms[0].submit(); return false;">{{ place.name }}&nbsp;{% if place.name == location.name %}<span class="glyphicon glyphicon-ok"></span>{% endif %}</a></li>
+				<li><a href="" onclick="document.getElementById('location').value = {{ place.id }}; document.forms[0].submit(); return false;">
+					{{ place.name }}&nbsp;{% if place.name == location.name %}<span class="glyphicon glyphicon-ok"></span>{% endif %}
+				</a></li>
 			{% endfor %}
 	        </ul>
     	</li>
@@ -58,6 +60,7 @@
 			{% else %}
 				{{ request.user }}
 			{% endif %}
+			<sup>{{ request.user.karma }}</sup>
 			</a></li>
 
 			<!-- {% if user.socialaccount_set.all.0.get_avatar_url %}
@@ -66,7 +69,7 @@
 			</a></li>
 			{% endif %} -->
 
-			<li><a href='accounts/logout'>Выход&nbsp;<span class="glyphicon glyphicon-log-out"></span></a></li>
+			<li><a href='/accounts/logout'>Выход&nbsp;<span class="glyphicon glyphicon-log-out"></span></a></li>
 		{% endif %}
     </ul>
   </div>

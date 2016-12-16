@@ -1,0 +1,16 @@
+{% extends 'catalog/base.html' %}
+{% block title %} Добавить {% endblock %}
+
+{% block sidebar %} 
+
+{% endblock %}
+
+{% block main %} 
+
+<form action="{{ request.path }}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Добавить" />
+</form>
+
+{% endblock %}

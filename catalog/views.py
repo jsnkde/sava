@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
+from django.core.exceptions import PermissionDenied
 from django.views import generic, View
 import re
 
@@ -10,13 +11,11 @@ from allauth.account.adapter import DefaultAccountAdapter
 from taggit.models import Tag
 
 from catalog.models import Location, User, Item
+from catalog.forms import ItemForm
 
 
-class IndexView(generic.ListView):
-	template_name = 'catalog/index.html'
-	context_object_name = 'items'
-
-	def get_location(self, request):
+class NavbarMixin(object):
+	def get(self, request, *args, **kwargs):
 		# Extract preserved location for authenticated users
 		if not request.user.is_anonymous and request.user.location is not None:
 			self.location = request.user.location
@@ -29,22 +28,12 @@ class IndexView(generic.ListView):
 		else:
 			self.location = Location.objects.get(id=1) # TODO
 
-	def get_queryset(self):
-		self.get_location(self.request)
-		
-		items = Item.objects.filter(user__location=self.location)
-
-		if self.request.GET.has_key('search') and len(self.request.GET['search']) > 0:
-			search = map(unicode.lower, re.findall(r'(\w+)', self.request.GET['search'], re.UNICODE))
-			items = items.filter(Q(tags__name__in=search) | Q(reduce(lambda x, y: x | y, [Q(description__icontains=word) for word in search]))).distinct()
-
-		return items
+		return super(NavbarMixin, self).get(request, *args, **kwargs)
 
 	def get_context_data(self, **kwargs):
-		context = super(IndexView, self).get_context_data(**kwargs)
+		context = super(NavbarMixin, self).get_context_data(**kwargs)
 		context['locations'] = Location.objects.all()
 		context['location'] = self.location
-		context['tags'] = Tag.objects.filter(item__user__location=self.location).annotate(count=Count('item')).order_by('-count')
 
 		return context
 
@@ -58,8 +47,66 @@ class IndexView(generic.ListView):
 				request.session['location'] = request.POST['location']
 
 
-		return HttpResponseRedirect(request.path)
+			return HttpResponseRedirect(request.path)
 
+		else:
+			return super(NavbarMixin, self).post(request, *args, **kwargs)
+
+
+class IndexView(NavbarMixin, generic.ListView):
+	template_name = 'catalog/index.html'
+	context_object_name = 'items'
+
+	def get_queryset(self):		
+		items = Item.objects.filter(user__location=self.location)
+
+		if self.request.GET.has_key('search') and len(self.request.GET['search']) > 0:
+			search = map(unicode.lower, re.findall(r'(\w+)', self.request.GET['search'], re.UNICODE))
+			items = items.filter(Q(tags__name__in=search) | Q(reduce(lambda x, y: x | y, [Q(description__icontains=word) for word in search]))).distinct()
+
+		return items.order_by('-updated')
+
+	def get_context_data(self, **kwargs):
+		context = super(IndexView, self).get_context_data(**kwargs)
+		context['tags'] = Tag.objects.filter(item__user__location=self.location).annotate(count=Count('item')).order_by('-count')
+
+		return context
+
+
+class ItemView(NavbarMixin, generic.DetailView):
+	model = Item
+	context_object_name = 'item'
+	template_name = 'catalog/item.html'
+
+
+class ItemCreateView(NavbarMixin, generic.edit.CreateView):
+	template_name = 'catalog/item_new.html'
+	model = Item
+	form_class = ItemForm
+
+	def form_valid(self, form):
+		item = form.save(commit=False)
+		item.user = self.request.user
+		return super(ItemCreateView, self).form_valid(form)
+
+	def get_success_url(self):
+		return reverse('catalog:detail', kwargs={'pk': self.object.id})
+
+
+class ItemUpdateView(NavbarMixin, generic.edit.UpdateView):
+	template_name = 'catalog/item_new.html'
+	model = Item
+	form_class = ItemForm
+
+	def get_object(self, *args, **kwargs):
+		obj = super(ItemUpdateView, self).get_object(*args, **kwargs)
+		if not obj.user == self.request.user:
+			raise PermissionDenied
+
+		return obj
+
+	def get_success_url(self):
+		return reverse('catalog:detail', kwargs={'pk': self.object.id})
 
 class SocialAccountAdapter(DefaultAccountAdapter):
 	def get_login_redirect_url(self, request):
