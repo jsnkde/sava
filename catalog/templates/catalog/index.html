@@ -29,6 +29,28 @@
 	    	</td></tr>
 	    </table></td></tr>
 	    {% endfor %}	
+
+		{% if is_paginated %}
+			<tr><td><ul class="pagination">
+			{% if page_obj.number > 2 %}
+				<li><a href="{% if search %}{{ search }}&amp;{% else %}?{% endif %}page=1">1</a></li>
+				{% if page_obj.number > 3 %}<li><a>...</a></li>{% endif %}
+			{% endif %}
+			{% for i in paginator.page_range %}
+				{% if page_obj.number == i %}
+					<li class="active"><span>{{ i }}</span></li>
+				{% else %}
+					{% if page_obj.number >= i|add:"-1" and page_obj.number <= i|add:"1" %}
+						<li><a href="{% if search %}{{ search }}&amp;{% else %}?{% endif %}page={{ i }}">{{ i }}</a></li>
+					{% endif %}
+				{% endif %}
+			{% endfor %}
+			{% if page_obj.number < page_obj.paginator.num_pages|add:"-1" %}
+				{% if page_obj.number < page_obj.paginator.num_pages|add:"-2" %}<li><a>...</a></li>{% endif %}
+				<li><a href="{% if search %}{{ search }}&amp;{% else %}?{% endif %}page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a></li>
+			{% endif %}
+			</td></tr></ul>
+		{% endif %}
 	    </table>
 {% endblock %}
 

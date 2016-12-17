@@ -17,7 +17,11 @@ from catalog.forms import ItemForm
 class NavbarMixin(object):
 	def get(self, request, *args, **kwargs):
 		# Extract preserved location for authenticated users
-		if not request.user.is_anonymous and request.user.location is not None:
+		if not request.user.is_anonymous:
+			if request.user.location is None:				
+				request.user.location = Location.objects.get(id=1) # TODO
+				request.user.save()
+
 			self.location = request.user.location
 
 		# Check session
@@ -46,7 +50,6 @@ class NavbarMixin(object):
 			else:
 				request.session['location'] = request.POST['location']
 
-
 			return HttpResponseRedirect(request.path)
 
 		else:
@@ -56,10 +59,12 @@ class NavbarMixin(object):
 class IndexView(NavbarMixin, generic.ListView):
 	template_name = 'catalog/index.html'
 	context_object_name = 'items'
+	paginate_by = 5
 
-	def get_queryset(self):		
+	def get_queryset(self):
 		items = Item.objects.filter(user__location=self.location)
 
+		# Find items with description or tags containing any word from the search string
 		if self.request.GET.has_key('search') and len(self.request.GET['search']) > 0:
 			search = map(unicode.lower, re.findall(r'(\w+)', self.request.GET['search'], re.UNICODE))
 			items = items.filter(Q(tags__name__in=search) | Q(reduce(lambda x, y: x | y, [Q(description__icontains=word) for word in search]))).distinct()
@@ -69,6 +74,10 @@ class IndexView(NavbarMixin, generic.ListView):
 	def get_context_data(self, **kwargs):
 		context = super(IndexView, self).get_context_data(**kwargs)
 		context['tags'] = Tag.objects.filter(item__user__location=self.location).annotate(count=Count('item')).order_by('-count')
+
+		# Pass search GET parameters for proper pagination
+		if self.request.GET.has_key('search') and len(self.request.GET['search']) > 0:
+			context['search'] = "?search=" + self.request.GET['search']
 
 		return context
 
@@ -100,7 +109,7 @@ class ItemUpdateView(NavbarMixin, generic.edit.UpdateView):
 
 	def get_object(self, *args, **kwargs):
 		obj = super(ItemUpdateView, self).get_object(*args, **kwargs)
-		if not obj.user == self.request.user:
+		if obj.user != self.request.user:
 			raise PermissionDenied
 
 		return obj

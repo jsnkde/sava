@@ -7,6 +7,10 @@
 
 {% block main %} 
 
+{% if request.user == item.user %}
+<p><a href="{% url 'catalog:edit_item' item.id %}">Редактировать</a></p>
+{% endif %}
+
 <p>{{ item.description }}</p>
 <p>{{ item.comment }}</p>
 
