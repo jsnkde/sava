@@ -96,7 +96,16 @@ class ItemView(NavbarMixin, generic.DetailView):
 	template_name = 'catalog/item.html'
 
 
-class ItemCreateView(NavbarMixin, generic.edit.CreateView):
+class PhoneFormatMixin(object):
+	def get_initial(self):
+		init = {}
+
+		if self.request.user.phone and len(self.request.user.phone) > 0:
+			init['phone'] = "+7 ({}{}{}) {}{}{} {}{} {}{}".format(*list(str(self.request.user.phone)))
+
+		return init
+
+class ItemCreateView(PhoneFormatMixin, NavbarMixin, generic.edit.CreateView):
 	template_name = 'catalog/item_new.html'
 	model = Item
 	form_class = ItemForm
@@ -104,13 +113,18 @@ class ItemCreateView(NavbarMixin, generic.edit.CreateView):
 	def form_valid(self, form):
 		item = form.save(commit=False)
 		item.user = self.request.user
+
+		if len(form.cleaned_data['phone']) > 0:
+			self.request.user.phone = form.cleaned_data['phone']
+			self.request.user.save()
+
 		return super(ItemCreateView, self).form_valid(form)
 
 	def get_success_url(self):
 		return reverse('catalog:detail', kwargs={'pk': self.object.id})
 
 
-class ItemUpdateView(NavbarMixin, generic.edit.UpdateView):
+class ItemUpdateView(PhoneFormatMixin, NavbarMixin, generic.edit.UpdateView):
 	template_name = 'catalog/item_new.html'
 	model = Item
 	form_class = ItemForm
@@ -137,6 +151,14 @@ class ItemUpdateView(NavbarMixin, generic.edit.UpdateView):
 
 	def get_success_url(self):
 		return reverse('catalog:detail', kwargs={'pk': self.object.id})
+
+	def form_valid(self, form):
+		if len(form.cleaned_data['phone']) > 0:
+			self.request.user.phone = form.cleaned_data['phone']
+			self.request.user.save()
+
+		return super(ItemUpdateView, self).form_valid(form)
+
 
 class SocialAccountAdapter(DefaultAccountAdapter):
 	def get_login_redirect_url(self, request):

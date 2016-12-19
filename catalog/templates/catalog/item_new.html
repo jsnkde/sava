@@ -9,28 +9,48 @@
 
 {% load taglib %}
 
+<table class="table table">
 <form action="{{ request.path }}" method="post">
     {% csrf_token %}
-    <div class="form-group">
+    <tr><td>
+    <div class="col-xs-12">
   		<label>Описание</label>
   		{{form.description|addcss:"form-control"}}
 	</div>
-	<div class="form-group">
+	</td></tr>
+
+	<tr><td>
+	<div class="col-xs-12">
   		<label>Дополнительные сведения</label>
   		{{form.comment|addcss:"form-control"}}
 	</div>
-	<div class="form-group">
+	</td></tr>
+
+	<tr><td>
+	<div class="col-xs-12">
   		<label>Ключевые слова</label>
   		{{form.tags|addcss:"form-control"}}
 	</div>
-	<div class="form-group">
-  		<label>Телефон</label>
-  		{{form.phone|addcss:"form-control"}}
+	</td></tr>
+
+	<tr><td>
+	<div class="col-xs-3">
+		<label>Телефон</label>
+		{{form.phone|addcss:"form-control"}}		
+	</div>
+	</td></tr>
+
+	<tr><td>
+	<div class="col-xs-12">
 		<strong>{{ form.phone.errors }}</strong>
 	</div>
-	<div class="form-group">
-		<button class="btn btn-success" type="submit">Готово!</button>
+	</td></tr>
+
+	<tr><td>
+	<div class="col-xs-12">
+		<button class="btn btn-success btn-md" type="submit">Готово!</button>
 	</div>
+	</td></tr>
 </form>
 
 {% endblock %}
