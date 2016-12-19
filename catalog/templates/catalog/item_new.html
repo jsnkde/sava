@@ -7,10 +7,30 @@
 
 {% block main %} 
 
+{% load taglib %}
+
 <form action="{{ request.path }}" method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Добавить" />
+    <div class="form-group">
+  		<label>Описание</label>
+  		{{form.description|addcss:"form-control"}}
+	</div>
+	<div class="form-group">
+  		<label>Дополнительные сведения</label>
+  		{{form.comment|addcss:"form-control"}}
+	</div>
+	<div class="form-group">
+  		<label>Ключевые слова</label>
+  		{{form.tags|addcss:"form-control"}}
+	</div>
+	<div class="form-group">
+  		<label>Телефон</label>
+  		{{form.phone|addcss:"form-control"}}
+		<strong>{{ form.phone.errors }}</strong>
+	</div>
+	<div class="form-group">
+		<button class="btn btn-success" type="submit">Готово!</button>
+	</div>
 </form>
 
 {% endblock %}

@@ -127,7 +127,7 @@ class Item(AbstractClass):
 	comment = models.CharField(max_length=1000, blank=True, null=True)
 	active = models.BooleanField(default=True)
 
-	tags = TaggableManager()
+	tags = TaggableManager(blank=True)
 
 	def __unicode__(self):
 		return self.description[:40]

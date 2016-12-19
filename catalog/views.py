@@ -5,7 +5,7 @@ from django.views import generic, View
 import re
 
 from django.urls import reverse
-from django.db.models import Q
+from django.db.models import Q, Case, When, IntegerField
 from django.db.models.aggregates import Count
 from allauth.account.adapter import DefaultAccountAdapter
 from taggit.models import Tag
@@ -15,7 +15,7 @@ from catalog.forms import ItemForm
 
 
 class NavbarMixin(object):
-	def get(self, request, *args, **kwargs):
+	def dispatch(self, request, *args, **kwargs):
 		# Extract preserved location for authenticated users
 		if not request.user.is_anonymous:
 			if request.user.location is None:				
@@ -32,6 +32,9 @@ class NavbarMixin(object):
 		else:
 			self.location = Location.objects.get(id=1) # TODO
 
+		return super(NavbarMixin, self).dispatch(request, *args, **kwargs)
+
+	def get(self, request, *args, **kwargs):
 		return super(NavbarMixin, self).get(request, *args, **kwargs)
 
 	def get_context_data(self, **kwargs):
@@ -60,9 +63,14 @@ class IndexView(NavbarMixin, generic.ListView):
 	template_name = 'catalog/index.html'
 	context_object_name = 'items'
 	paginate_by = 5
+	my = False
 
 	def get_queryset(self):
-		items = Item.objects.filter(user__location=self.location)
+		items = Item.objects.filter(user__location=self.location).filter(active=True)
+
+		# Filter by user if necessary
+		if self.my and self.request.user.is_authenticated():
+			items = items.filter(user=self.request.user)
 
 		# Find items with description or tags containing any word from the search string
 		if self.request.GET.has_key('search') and len(self.request.GET['search']) > 0:
@@ -73,7 +81,7 @@ class IndexView(NavbarMixin, generic.ListView):
 
 	def get_context_data(self, **kwargs):
 		context = super(IndexView, self).get_context_data(**kwargs)
-		context['tags'] = Tag.objects.filter(item__user__location=self.location).annotate(count=Count('item')).order_by('-count')
+		context['tags'] = Tag.objects.filter(item__user__location=self.location).filter(item__active=True).annotate(count=Count(Case(When(item__active=True, then=1), output_field=IntegerField(),))).order_by('-count')
 
 		# Pass search GET parameters for proper pagination
 		if self.request.GET.has_key('search') and len(self.request.GET['search']) > 0:
@@ -106,6 +114,7 @@ class ItemUpdateView(NavbarMixin, generic.edit.UpdateView):
 	template_name = 'catalog/item_new.html'
 	model = Item
 	form_class = ItemForm
+	done = False
 
 	def get_object(self, *args, **kwargs):
 		obj = super(ItemUpdateView, self).get_object(*args, **kwargs)
@@ -113,6 +122,18 @@ class ItemUpdateView(NavbarMixin, generic.edit.UpdateView):
 			raise PermissionDenied
 
 		return obj
+
+	def get(self, request, *args, **kwargs):
+		self.obj = self.get_object()
+		if self.done:
+			self.obj.active = False
+			self.obj.save()
+
+			nxt = reverse('catalog:index') if not request.GET.has_key('next') else request.GET['next']
+
+			return HttpResponseRedirect(nxt)
+
+		return super(ItemUpdateView, self).get(request, *args, **kwargs)
 
 	def get_success_url(self):
 		return reverse('catalog:detail', kwargs={'pk': self.object.id})

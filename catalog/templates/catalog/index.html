@@ -3,9 +3,9 @@
 
 {% block sidebar %}
     <table class="table table-condensed">
-      {% for tag in tags %}
+    	{% for tag in tags %}
 	    	<tr><td><a href='{% url "catalog:index" %}?search={{ tag.name }}'>{{ tag.name }}</a> ({{ tag.count }})</td></tr>
-	    {% endfor %} 
+		{% endfor %} 
 	</table>
 {% endblock %}
 
@@ -21,6 +21,13 @@
 	    	</td></tr>
 	    {% for item in items %}
 	    <tr><td><table class="table table-condensed">
+	    	{% if request.user == item.user %}
+			<tr class="pull-left">
+				<td><a href="{% url 'catalog:edit_item' item.id %}"><small>Редактировать</small></a></td>
+				<td><a href="{% url 'catalog:delete_item' item.id %}?next={{ request.get_full_path }}"><small>Удалить</small></a></td>
+			</tr>
+			{% endif %}
+
 	    	<tr><td><a href="{% url 'catalog:detail' item.id %}">{{ item.description }}</a></td></tr>
 	    	<tr><td>
 	    		{% for tag in item.tags.all %}

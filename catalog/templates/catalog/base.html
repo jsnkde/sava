@@ -61,7 +61,7 @@
 				<a href="{% provider_login_url 'vk' method='js_sdk' next=request.path %}"><img src='{% static "catalog/img/vk.png" %}' alt='VK' height="40" /></a>
 			</span></li>
 		{% else %}
-			<li><a>
+			<li><a href="{% url 'catalog:profile' %}">
 			<span class="glyphicon glyphicon-user"></span>
 			{% if request.user.first_name and request.user.last_name %}
 				{{ request.user.first_name }}&nbsp;{{ request.user.last_name }}

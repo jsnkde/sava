@@ -155,4 +155,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 ACCOUNT_ADAPTER = "catalog.views.SocialAccountAdapter"
 
 TAGGIT_CASE_INSENSITIVE = True
+TAGGIT_TAGS_FROM_STRING = 'catalog.forms.tag_splitter'
 

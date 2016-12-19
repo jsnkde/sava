@@ -12,6 +12,7 @@
 </head>
 
 <body>
+
 <form method="post" action="{% url 'account_logout' %}">
   {% csrf_token %}
   {% if redirect_field_value %}
@@ -22,4 +23,5 @@
   	<button type="submit" class='btn btn-primary btn-lg'>Подтвердить выход</button>
   </div>
 </form>
+
 </body>

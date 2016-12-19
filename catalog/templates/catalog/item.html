@@ -8,10 +8,18 @@
 {% block main %} 
 
 {% if request.user == item.user %}
-<p><a href="{% url 'catalog:edit_item' item.id %}">Редактировать</a></p>
+<p>
+	<a href="{% url 'catalog:edit_item' item.id %}"><small>Редактировать</small></a> 
+	<a href="{% url 'catalog:delete_item' item.id %}"><small>Удалить</small></a>
+</p>
 {% endif %}
 
 <p>{{ item.description }}</p>
 <p>{{ item.comment }}</p>
+<p>
+{% for tag in item.tags.all %}
+	{{ tag.name }}&nbsp;
+{% endfor %} 
+</p>
 
 {% endblock %}
