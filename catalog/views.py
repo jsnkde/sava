@@ -72,6 +72,9 @@ class IndexView(NavbarMixin, generic.ListView):
 		if self.my and self.request.user.is_authenticated():
 			items = items.filter(user=self.request.user)
 
+		if self.kwargs.has_key('pk'):
+			items = items.filter(user__id=self.kwargs['pk'])
+
 		# Find items with description or tags containing any word from the search string
 		if self.request.GET.has_key('search') and len(self.request.GET['search']) > 0:
 			search = map(unicode.lower, re.findall(r'(\w+)', self.request.GET['search'], re.UNICODE))

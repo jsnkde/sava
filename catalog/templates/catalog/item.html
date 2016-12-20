@@ -15,13 +15,19 @@
 </p>
 {% endif %}
 
-<p>{{ item.description }}</p>
-<p>{{ item.comment }}</p>
-<p>{{ request.user.phone_formatted }}</p>
-<p>
-{% for tag in item.tags.all %}
-	{{ tag.name }}&nbsp;
-{% endfor %} 
-</p>
+<div class="container-fluid">
+	<div class="panel panel-default">
+		<div class="panel-heading">{{ item.description }}</div>
+		<div class="panel-body">
+			<p>{{ item.comment }}</p>
+			<p>{{ request.user.phone_formatted }}</p>
+			<div>
+			{% for tag in item.tags.all %}
+				<a class="label label-info" href="/?search={{ tag.name }}">{{ tag.name }}</a>
+			{% endfor %} 
+			</div>
+		</div>
+	</div>	
+</div>
 
 {% endblock %}

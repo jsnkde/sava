@@ -10,5 +10,6 @@ urlpatterns = [
     url(r'^item/(?P<pk>[0-9]+)/edit$', views.ItemUpdateView.as_view(), name='edit_item'),
     url(r'^item/(?P<pk>[0-9]+)/delete$', views.ItemUpdateView.as_view(done=True), name='delete_item'),
     url(r'^item/new$', views.ItemCreateView.as_view(), name='new_item'),
-    url(r'^my/', views.IndexView.as_view(my=True), name='profile'),
+    url(r'^my/', views.IndexView.as_view(my=True), name='my'),
+    url(r'^user/(?P<pk>[0-9]+)$', views.IndexView.as_view(), name='profile'),
 ]

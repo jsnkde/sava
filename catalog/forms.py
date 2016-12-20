@@ -14,7 +14,7 @@ class ItemForm(forms.ModelForm):
 
 	description = forms.CharField(required=False)
 	comment = forms.CharField(widget=forms.Textarea, required = False)
-	phone = forms.CharField(min_length=10, max_length=25, required = False, widget=forms.TextInput(attrs={'placeholder': '+7 (999) 999 99 99'}))
+	phone = forms.CharField(max_length=25, required = False, widget=forms.TextInput(attrs={'placeholder': '+7 (999) 999 99 99'}))
 
 	def clean_description(self):
 		description = self.cleaned_data['description']
@@ -40,4 +40,5 @@ class ItemForm(forms.ModelForm):
 
 def tag_splitter(tag_string):
 	return map(unicode.lower, re.findall('\w+', tag_string, re.UNICODE))
+
 

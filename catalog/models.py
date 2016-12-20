@@ -123,6 +123,13 @@ class User(AbstractUser):
 	def phone_formatted(self):
 		return "+7 ({}{}{}) {}{}{} {}{} {}{}".format(*list(str(self.phone)))
 
+	def name(self):
+		if self.first_name and self.last_name:
+			return "{} {}".format(self.first_name, self.last_name)
+
+		else:
+			return self.username
+
 
 class Item(AbstractClass):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)

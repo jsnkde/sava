@@ -11,9 +11,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<link rel="stylesheet" href="{% static 'catalog/css/style.css' %}" />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="{% static 'catalog/css/style.css' %}" />
 
 </head>
 <body>
@@ -61,13 +61,9 @@
 				<a href="{% provider_login_url 'vk' method='js_sdk' next=request.path %}"><img src='{% static "catalog/img/vk.png" %}' alt='VK' height="40" /></a>
 			</span></li>
 		{% else %}
-			<li><a href="{% url 'catalog:profile' %}">
+			<li><a href="{% url 'catalog:my' %}">
 			<span class="glyphicon glyphicon-user"></span>
-			{% if request.user.first_name and request.user.last_name %}
-				{{ request.user.first_name }}&nbsp;{{ request.user.last_name }}
-			{% else %}
-				{{ request.user }}
-			{% endif %}
+			{{ request.user.name }}
 			<sup>{{ request.user.karma }}</sup>
 			</a></li>
 
