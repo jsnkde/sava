@@ -120,6 +120,9 @@ class User(AbstractUser):
 	phone = models.CharField(max_length=10, null=True, blank=True)
 	location = models.ForeignKey(Location, null=True, on_delete=models.SET_NULL)
 
+	def phone_formatted(self):
+		return "+7 ({}{}{}) {}{}{} {}{} {}{}".format(*list(str(self.phone)))
+
 
 class Item(AbstractClass):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -12,8 +12,16 @@ class ItemForm(forms.ModelForm):
 		model = Item
 		fields = ['description', 'comment', 'tags']
 
+	description = forms.CharField(required=False)
 	comment = forms.CharField(widget=forms.Textarea, required = False)
-	phone = forms.CharField(min_length=10, max_length=25, required = False)
+	phone = forms.CharField(min_length=10, max_length=25, required = False, widget=forms.TextInput(attrs={'placeholder': '+7 (999) 999 99 99'}))
+
+	def clean_description(self):
+		description = self.cleaned_data['description']
+		if len(description) == 0:
+			raise forms.ValidationError(u'Не забудьте заполнить это поле')
+
+		return description
 
 	def clean_phone(self):
 		phone = self.cleaned_data['phone']
@@ -25,7 +33,7 @@ class ItemForm(forms.ModelForm):
 		r = pattern.match(phone)
 
 		if r is None:
-			raise forms.ValidationError(u'Введите телефон в формате +7 (999) 999 99 99')
+			raise forms.ValidationError(u'Не удается распознать номер, попробуйте так: +7 (999) 999 99 99')
 
 		return reduce(lambda x, y: x + y, r.groups())
 

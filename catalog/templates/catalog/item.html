@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block main %} 
+{% load taglib %}
 
 {% if request.user == item.user %}
 <p>
@@ -16,6 +17,7 @@
 
 <p>{{ item.description }}</p>
 <p>{{ item.comment }}</p>
+<p>{{ request.user.phone_formatted }}</p>
 <p>
 {% for tag in item.tags.all %}
 	{{ tag.name }}&nbsp;

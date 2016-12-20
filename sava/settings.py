@@ -157,3 +157,4 @@ ACCOUNT_ADAPTER = "catalog.views.SocialAccountAdapter"
 TAGGIT_CASE_INSENSITIVE = True
 TAGGIT_TAGS_FROM_STRING = 'catalog.forms.tag_splitter'
 
+ACCOUNT_LOGOUT_ON_GET = True

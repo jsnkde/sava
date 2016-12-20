@@ -2,11 +2,12 @@
 {% block title %} Главная {% endblock %}
 
 {% block sidebar %}
-    <table class="table table-condensed">
-    	{% for tag in tags %}
-	    	<tr><td><a href='{% url "catalog:index" %}?search={{ tag.name }}'>{{ tag.name }}</a> ({{ tag.count }})</td></tr>
-		{% endfor %} 
-	</table>
+<div class="list-group col-sm-9">
+	<div class="list-group-item"><strong>Популярное</strong></div>
+	{% for tag in tags %}
+    	<a class="list-group-item" href='{% url "catalog:index" %}?search={{ tag.name }}'>{{ tag.name }} <span class="badge">{{ tag.count }}</span></a>
+	{% endfor %} 
+</div>
 {% endblock %}
 
 {% block main %}
@@ -19,23 +20,27 @@
 				</div>
 			</form>
 	    	</td></tr>
+	    <tr><td>
+	    <div class="list-group">
 	    {% for item in items %}
-	    <tr><td><table class="table table-condensed">
+	    <div class="list-group-item">
 	    	{% if request.user == item.user %}
-			<tr class="pull-left">
-				<td><a href="{% url 'catalog:edit_item' item.id %}"><small>Редактировать</small></a></td>
-				<td><a href="{% url 'catalog:delete_item' item.id %}?next={{ request.get_full_path }}"><small>Удалить</small></a></td>
-			</tr>
+			<div>
+				<a href="{% url 'catalog:edit_item' item.id %}"><small>редактировать</small></a>
+				<a href="{% url 'catalog:delete_item' item.id %}?next={{ request.get_full_path }}"><small>удалить</small></a>
+			</div>
 			{% endif %}
 
-	    	<tr><td><a href="{% url 'catalog:detail' item.id %}">{{ item.description }}</a></td></tr>
-	    	<tr><td>
+	    	<div><a href="{% url 'catalog:detail' item.id %}">{{ item.description }}</a></div>
+	    	<div>	    	
 	    		{% for tag in item.tags.all %}
 	    			<a href='{% url "catalog:index" %}?search={{ tag.name }}' class="small">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
 	    		{% endfor %}
-	    	</td></tr>
-	    </table></td></tr>
+	    	</div>
+	    </div>
 	    {% endfor %}	
+	    </div>
+	    </td></tr>
 
 		{% if is_paginated %}
 			<tr><td><ul class="pagination">

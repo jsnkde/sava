@@ -81,7 +81,7 @@ class IndexView(NavbarMixin, generic.ListView):
 
 	def get_context_data(self, **kwargs):
 		context = super(IndexView, self).get_context_data(**kwargs)
-		context['tags'] = Tag.objects.filter(item__user__location=self.location).filter(item__active=True).annotate(count=Count(Case(When(item__active=True, then=1), output_field=IntegerField(),))).order_by('-count')
+		context['tags'] = Tag.objects.all().annotate(count=Count(Case(When(item__active=True, item__user__location=self.location, then=1), output_field=IntegerField(),))).order_by('-count').filter(count__gt=0)[:20]
 
 		# Pass search GET parameters for proper pagination
 		if self.request.GET.has_key('search') and len(self.request.GET['search']) > 0:
@@ -101,7 +101,7 @@ class PhoneFormatMixin(object):
 		init = {}
 
 		if self.request.user.phone and len(self.request.user.phone) > 0:
-			init['phone'] = "+7 ({}{}{}) {}{}{} {}{} {}{}".format(*list(str(self.request.user.phone)))
+			init['phone'] = self.request.user.phone_formatted
 
 		return init
 

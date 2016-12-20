@@ -9,48 +9,42 @@
 
 {% load taglib %}
 
-<table class="table table">
+<div class="container-fluid">
+
 <form action="{{ request.path }}" method="post">
     {% csrf_token %}
-    <tr><td>
-    <div class="col-xs-12">
-  		<label>Описание</label>
-  		{{form.description|addcss:"form-control"}}
+	<div class="col-sm-12 form-group">
+		<h4><label for='id_description'>Описание</label></h4>
+		{% if form.description.errors %}
+		<div class="col-sm-12 alert alert-warning">
+			{{ form.description.errors }}
+		</div>
+		{% endif %}
+		{{form.description|addcss:"form-control"}}
 	</div>
-	</td></tr>
+	<div class="col-sm-12 form-group"">
+		<h4><label for='id_comment'>Дополнительные сведения</label></h4>
+		{{form.comment|addcss:"form-control"}}
+	</div>
+	<div class="col-sm-12 form-group"">
+		<h4><label for="id_tags">Ключевые слова</label></h4>
+		{{form.tags|addcss:"form-control"}}
+	</div>
 
-	<tr><td>
-	<div class="col-xs-12">
-  		<label>Дополнительные сведения</label>
-  		{{form.comment|addcss:"form-control"}}
+	<div class="col-sm-12 form-group">
+		<h4><label for="id_phone">Телефон</label></h4>
+		{% if form.phone.errors %}
+		<div class="col-sm-12 alert alert-warning">
+			{{ form.phone.errors }}
+		</div>
+		{% endif %}
+		<div class="col-sm-3 row">{{form.phone|addcss:"form-control"}}</div>
 	</div>
-	</td></tr>
 
-	<tr><td>
-	<div class="col-xs-12">
-  		<label>Ключевые слова</label>
-  		{{form.tags|addcss:"form-control"}}
+	<div class="col-sm-12">
+		<button class="btn btn-success btn-md pull-left" type="submit">Готово!</button>
 	</div>
-	</td></tr>
-
-	<tr><td>
-	<div class="col-xs-3">
-		<label>Телефон</label>
-		{{form.phone|addcss:"form-control"}}		
-	</div>
-	</td></tr>
-
-	<tr><td>
-	<div class="col-xs-12">
-		<strong>{{ form.phone.errors }}</strong>
-	</div>
-	</td></tr>
-
-	<tr><td>
-	<div class="col-xs-12">
-		<button class="btn btn-success btn-md" type="submit">Готово!</button>
-	</div>
-	</td></tr>
 </form>
+</div>
 
 {% endblock %}
