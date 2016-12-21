@@ -98,6 +98,13 @@ class ItemView(NavbarMixin, generic.DetailView):
 	context_object_name = 'item'
 	template_name = 'catalog/item.html'
 
+	def dispatch(self, request, *args, **kwargs):
+		if request.POST.has_key('karma'):
+			
+			return HttpResponseRedirect(request.path)
+
+		return super(ItemView, self).dispatch(request, *args, **kwargs)
+
 
 class PhoneFormatMixin(object):
 	def get_initial(self):

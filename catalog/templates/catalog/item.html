@@ -13,6 +13,15 @@
 	<a href="{% url 'catalog:edit_item' item.id %}"><small>Редактировать</small></a> 
 	<a href="{% url 'catalog:delete_item' item.id %}"><small>Удалить</small></a>
 </p>
+{% else %}
+	{% if request.user|can_give_karma:item.user %}
+	<form action="" method="post">
+	{% csrf_token %}
+		<button class="btn btn-success" type="submit" name="karma">Сказать спасибо!</button>
+	</form>
+	{% else %}
+		Уже поблагодарили.
+	{% endif %}
 {% endif %}
 
 <div class="container-fluid">
@@ -20,7 +29,7 @@
 		<div class="panel-heading">{{ item.description }}</div>
 		<div class="panel-body">
 			<p>{{ item.comment }}</p>
-			<p>{{ request.user.phone_formatted }}</p>
+			<p>{{ item.user.phone_formatted }}</p>
 			<div>
 			{% for tag in item.tags.all %}
 				<a class="label label-info" href="/?search={{ tag.name }}">{{ tag.name }}</a>

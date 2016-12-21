@@ -14,3 +14,7 @@ def add(value, number):
 @register.filter()
 def addcss(field, css):
    return field.as_widget(attrs={"class": css})
+
+@register.filter()
+def can_give_karma(field, owner):
+   return field.can_give_karma(owner)

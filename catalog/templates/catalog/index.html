@@ -5,7 +5,7 @@
 <div class="list-group col-sm-9">
 	<div class="list-group-item"><strong>Популярное</strong></div>
 	{% for tag in tags %}
-    	<a class="list-group-item" href='{% url "catalog:index" %}?search={{ tag.name }}'>{{ tag.name }} <span class="label label-primary pull-right">{{ tag.count }}</span></a>
+    	<a class="list-group-item" href='{% url "catalog:index" %}?search={{ tag.name }}'>{{ tag.name }} <span class="badge pull-right">{{ tag.count }}</span></a>
 	{% endfor %} 
 </div>
 {% endblock %}
@@ -25,7 +25,7 @@
 	    {% for item in items %}
 	    <div class="list-group-item">
 	    	<div>
-	    		<a href="{% url 'catalog:profile' item.user.id %}">{{ item.user.name }}</a> {{ item.created|date:"i:H d.m.Y"}}
+	    		<a href="{% url 'catalog:profile' item.user.id %}">{{ item.user }}</a> {{ item.created|date:"H:i d.m.Y"}}
 	    	</div>
 	    	{% if request.user == item.user %}
 			<div>
@@ -37,7 +37,7 @@
 	    	<div><a href="{% url 'catalog:detail' item.id %}">{{ item.description }}</a></div>
 	    	<div>	    	
 	    		{% for tag in item.tags.all %}
-	    			<a href='{% url "catalog:index" %}?search={{ tag.name }}' class="small label label-info">{{ tag }}</a>
+	    			<a href='{% url "catalog:index" %}?search={{ tag.name }}' class="label label-primary">{{ tag }}</a>
 	    		{% endfor %}
 	    	</div>
 	    </div>
