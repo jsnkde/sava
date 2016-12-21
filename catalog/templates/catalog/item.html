@@ -14,13 +14,11 @@
 	<a href="{% url 'catalog:delete_item' item.id %}"><small>Удалить</small></a>
 </p>
 {% else %}
-	{% if request.user|can_give_karma:item.user %}
+	{% if not reques.user.anonymous and request.user|can_give_karma:item.user %}
 	<form action="" method="post">
 	{% csrf_token %}
 		<button class="btn btn-success" type="submit" name="karma">Сказать спасибо!</button>
 	</form>
-	{% else %}
-		Уже поблагодарили.
 	{% endif %}
 {% endif %}
 
@@ -28,6 +26,7 @@
 	<div class="panel panel-default">
 		<div class="panel-heading">{{ item.description }}</div>
 		<div class="panel-body">
+			<p>{{ item.user }}<sup>{{ item.user.get_karma }}</sup></p>
 			<p>{{ item.comment }}</p>
 			<p>{{ item.user.phone_formatted }}</p>
 			<div>

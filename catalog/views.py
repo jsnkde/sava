@@ -10,7 +10,7 @@ from django.db.models.aggregates import Count
 from allauth.account.adapter import DefaultAccountAdapter
 from taggit.models import Tag
 
-from catalog.models import Location, User, Item
+from catalog.models import Location, User, Item, Karma
 from catalog.forms import ItemForm
 
 
@@ -99,8 +99,9 @@ class ItemView(NavbarMixin, generic.DetailView):
 	template_name = 'catalog/item.html'
 
 	def dispatch(self, request, *args, **kwargs):
-		if request.POST.has_key('karma'):
-			
+		if request.POST.has_key('karma') and request.user.is_authenticated():
+			obj = self.get_object()
+			Karma.objects.give(obj.user, request.user)
 			return HttpResponseRedirect(request.path)
 
 		return super(ItemView, self).dispatch(request, *args, **kwargs)
