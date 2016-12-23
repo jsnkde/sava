@@ -7,9 +7,9 @@ register = template.Library()
 def region_to_str(value):
     return Location.REGIONS[int(value)][1]
     
-@register.filter()
-def add(value, number):
-	return value + number
+# @register.filter()
+# def add(value, number):
+# 	return value + number
 
 @register.filter()
 def addcss(field, css):

@@ -62,7 +62,7 @@ class NavbarMixin(object):
 class IndexView(NavbarMixin, generic.ListView):
 	template_name = 'catalog/index.html'
 	context_object_name = 'items'
-	paginate_by = 5
+	paginate_by = 10
 	my = False
 
 	def get_queryset(self):
@@ -92,6 +92,16 @@ class IndexView(NavbarMixin, generic.ListView):
 
 		return context
 
+	def dispatch(self, request, *args, **kwargs):
+		if request.POST.has_key('karma') and request.POST.has_key('user_id') and request.user.is_authenticated():
+			owner = User.objects.filter(id=request.POST['user_id'])
+			if owner.exists():
+				request.user.give_karma(owner[0])
+
+			return HttpResponseRedirect(request.get_full_path())
+
+		return super(IndexView, self).dispatch(request, *args, **kwargs)
+
 
 class ItemView(NavbarMixin, generic.DetailView):
 	model = Item
@@ -100,8 +110,7 @@ class ItemView(NavbarMixin, generic.DetailView):
 
 	def dispatch(self, request, *args, **kwargs):
 		if request.POST.has_key('karma') and request.user.is_authenticated():
-			obj = self.get_object()
-			Karma.objects.give(obj.user, request.user)
+			request.user.give_karma(self.get_object().user)
 			return HttpResponseRedirect(request.path)
 
 		return super(ItemView, self).dispatch(request, *args, **kwargs)
@@ -116,6 +125,7 @@ class PhoneFormatMixin(object):
 
 		return init
 
+
 class ItemCreateView(PhoneFormatMixin, NavbarMixin, generic.edit.CreateView):
 	template_name = 'catalog/item_new.html'
 	model = Item
@@ -125,14 +135,13 @@ class ItemCreateView(PhoneFormatMixin, NavbarMixin, generic.edit.CreateView):
 		item = form.save(commit=False)
 		item.user = self.request.user
 
-		if len(form.cleaned_data['phone']) > 0:
-			self.request.user.phone = form.cleaned_data['phone']
-			self.request.user.save()
+		self.request.user.phone = form.cleaned_data['phone']
+		self.request.user.save()
 
 		return super(ItemCreateView, self).form_valid(form)
 
 	def get_success_url(self):
-		return reverse('catalog:detail', kwargs={'pk': self.object.id})
+		return reverse('catalog:index')
 
 
 class ItemUpdateView(PhoneFormatMixin, NavbarMixin, generic.edit.UpdateView):
@@ -161,12 +170,11 @@ class ItemUpdateView(PhoneFormatMixin, NavbarMixin, generic.edit.UpdateView):
 		return super(ItemUpdateView, self).get(request, *args, **kwargs)
 
 	def get_success_url(self):
-		return reverse('catalog:detail', kwargs={'pk': self.object.id})
+		return reverse('catalog:index')
 
 	def form_valid(self, form):
-		if len(form.cleaned_data['phone']) > 0:
-			self.request.user.phone = form.cleaned_data['phone']
-			self.request.user.save()
+		self.request.user.phone = form.cleaned_data['phone']
+		self.request.user.save()
 
 		return super(ItemUpdateView, self).form_valid(form)
 

@@ -14,7 +14,7 @@
 	<a href="{% url 'catalog:delete_item' item.id %}"><small>Удалить</small></a>
 </p>
 {% else %}
-	{% if not reques.user.anonymous and request.user|can_give_karma:item.user %}
+	{% if not request.user.anonymous and request.user|can_give_karma:item.user %}
 	<form action="" method="post">
 	{% csrf_token %}
 		<button class="btn btn-success" type="submit" name="karma">Сказать спасибо!</button>
@@ -30,10 +30,12 @@
 			<p>{{ item.comment }}</p>
 			<p>{{ item.user.phone_formatted }}</p>
 			<div>
-			{% for tag in item.tags.all %}
-				<a class="label label-info" href="/?search={{ tag.name }}">{{ tag.name }}</a>
-			{% endfor %} 
 			</div>
+		</div>
+		<div class="panel-heading">			
+			{% for tag in item.tags.all %}
+				<a class="label label-primary" href="/?search={{ tag.name }}">{{ tag.name }}</a>
+			{% endfor %} 
 		</div>
 	</div>	
 </div>

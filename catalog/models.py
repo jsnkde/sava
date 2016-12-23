@@ -116,57 +116,16 @@ class Location(models.Model):
 		ordering = ['region', 'name']
 
 
-class KarmaManager(models.Manager):
-	def get_karma(self, user):
-		return super(KarmaManager, self).get_queryset().filter(owner=user).aggregate(Sum('value'))['value__sum']
-
-	def get_karma_list(self):
-		return super(KarmaManager, self).get_queryset().values('owner__id', 'owner__username', 'owner__first_name', 'owner__last_name').annotate(sum=Sum('value'))
-
-	def can_give_karma(self, owner, giver):
-		k = super(KarmaManager, self).get_queryset().filter(owner=owner, giver=giver)
-		return not k.exists() or (k.exists() and k[0].value == 0)
-
-	def give(self, owner, giver):
-		if owner == giver:
-			return False
-
-		k = super(KarmaManager, self).get_queryset().filter(owner=owner, giver=giver)
-		if not k.exists():
-			self.create(owner=owner, giver=giver, value=1)
-
-			return True
-
-		return k[0].give() 
-
-
 class Karma(models.Model):
 	owner = models.ForeignKey('User', on_delete=models.CASCADE, related_name='owner')
 	giver = models.ForeignKey('User', on_delete=models.CASCADE, related_name='giver')
 	value = models.IntegerField(default=0)
-
-	objects = KarmaManager()
 
 	class Meta:
 		unique_together = (("owner", "giver"),)
 
 	def __unicode__(self):
 		return "{} from {}: {}".format(self.owner, self.giver, self.value)
-
-	def is_given(self):
-		if self.value == 0:
-			return False
-
-		return True
-
-	def give(self):
-		if not self.is_given():
-			self.value = 1
-			self.save()
-
-			return True
-
-		return False
 
 
 class User(AbstractUser):
@@ -188,7 +147,31 @@ class User(AbstractUser):
 		return self.owner.aggregate(Sum('value'))['value__sum'] or 0
 
 	def can_give_karma(self, usr):
-		return Karma.objects.can_give_karma(usr, self)
+		if self == usr:
+			return False
+
+		k = self.giver.filter(owner=usr)
+		if not k.exists() or (k.exists() and k[0].value == 0):
+			return True
+
+		return False
+
+	def give_karma(self, usr):
+		if self == usr:
+			return
+			
+		if not self.giver.filter(owner=usr).exists():
+			self.giver.create(owner=usr, giver=self, value=1)
+
+		else:
+			k = self.giver.filter(owner=usr)[0]
+			k.value = 1
+			k.save()
+
+
+	@classmethod
+	def karma_all(cls):
+		return cls.objects.all().annotate(karma_sum=Sum('owner__value'))
 
 
 class Item(AbstractClass):

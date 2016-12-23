@@ -2,7 +2,7 @@
 {% block title %} Главная {% endblock %}
 
 {% block sidebar %}
-<div class="list-group col-sm-9">
+<div class="list-group">
 	<div class="list-group-item"><strong>Популярное</strong></div>
 	{% for tag in tags %}
     	<a class="list-group-item" href='{% url "catalog:index" %}?search={{ tag.name }}'>{{ tag.name }} <span class="badge pull-right">{{ tag.count }}</span></a>
@@ -11,64 +11,75 @@
 {% endblock %}
 
 {% block main %}
-	    <table class="table table-condensed">
-	    	<tr><td>
-	    		<form method='GET' action=''>
+	    <div>
+	    	<form method='GET' action=''>
 				<div class="input-group">
 					<input id="search" type="text" class="form-control" name="search" placeholder="одежда, техника, игрушки">
 					<span class="input-group-addon"><button class="submit-glyph glyphicon glyphicon-search"></button></span>
 				</div>
 			</form>
-	    	</td></tr>
-	    <tr><td>
-	    <div class="list-group">
-	    {% for item in items %}
-	    <div class="list-group-item">
-	    	<div>
-	    		<a href="{% url 'catalog:profile' item.user.id %}">{{ item.user }}</a> {{ item.created|date:"H:i d.m.Y"}}
-	    	</div>
-	    	{% if request.user == item.user %}
-			<div>
-				<a href="{% url 'catalog:edit_item' item.id %}"><small>редактировать</small></a>
-				<a href="{% url 'catalog:delete_item' item.id %}?next={{ request.get_full_path }}"><small>удалить</small></a>
-			</div>
-			{% endif %}
+	    </div>
 
-	    	<div><a href="{% url 'catalog:detail' item.id %}">{{ item.description }}</a></div>
-	    	<div>	    	
-	    		{% for tag in item.tags.all %}
-	    			<a href='{% url "catalog:index" %}?search={{ tag.name }}' class="label label-primary">{{ tag }}</a>
-	    		{% endfor %}
-	    	</div>
+	    <div class="list-group">
+		    {% for item in items %}
+		    <div class="list-group-item">
+		    	<div>
+		    		<span class="small-gray-text">		    			
+		    			<a href="{% url 'catalog:profile' item.user.id %}">{{ item.user }}</a><sup>{{ item.user.get_karma }}</sup>	    			
+				    	{% if request.user == item.user %}
+							(<a href="{% url 'catalog:edit_item' item.id %}"><small>редактировать</small></a>,&nbsp;
+							<a href="{% url 'catalog:delete_item' item.id %}?next={{ request.get_full_path }}"><small>удалить</small></a>)
+						{% endif %}
+		    		</span>
+		    		<span class="small-gray-text pull-right"> {{ item.created|date:"H:i d.m.Y"}}</span>
+		    	</div>
+		    	<div><a href="#item{{ item.id }}" data-toggle='collapse'><h4>{{ item.description }}</h4></a></div>
+		    	<div id="item{{ item.id }}" class="collapse">
+		    		{% if item.comment %}<div>{{ item.comment|linebreaks}}</div>{% endif %}
+		    		<div><p>{{ item.user.phone_formatted }}</p></div>
+		    		<div>
+		    		{% load can_give_karma from taglib %}
+			    		{% if not request.user.anonymous and request.user|can_give_karma:item.user %}
+						<form action="" method="post">
+						{% csrf_token %}
+							<input type="hidden" name='user_id' value="{{ item.user.id }}"/>
+							<button class="btn btn-success" type="submit" name="karma">Спасибо!</button>
+						</form>
+						{% endif %}
+		    		</div>
+		    	</div>
+		    	<div>
+		    		{% for tag in item.tags.all %}
+		    			<a href='{% url "catalog:index" %}?search={{ tag.name }}' class="label label-primary">{{ tag }}</a>
+		    		{% endfor %}
+		    	</div>
+		    </div>
+		    {% endfor %}	
 	    </div>
-	    {% endfor %}	
-	    </div>
-	    </td></tr>
 
 		{% if is_paginated %}
-			<tr><td><ul class="pagination">
-			{% if page_obj.number > 2 %}
-				<li><a href="{% if search %}{{ search }}&amp;{% else %}?{% endif %}page=1">1</a></li>
-				{% if page_obj.number > 3 %}<li><a>...</a></li>{% endif %}
-			{% endif %}
-			{% for i in paginator.page_range %}
-				{% if page_obj.number == i %}
-					<li class="active"><span>{{ i }}</span></li>
-				{% else %}
-					{% if page_obj.number >= i|add:"-1" and page_obj.number <= i|add:"1" %}
-						<li><a href="{% if search %}{{ search }}&amp;{% else %}?{% endif %}page={{ i }}">{{ i }}</a></li>
-					{% endif %}
+			<div>		
+				<ul class="pagination">
+				{% if page_obj.number > 2 %}
+					<li><a href="{% if search %}{{ search }}&amp;{% else %}?{% endif %}page=1">1</a></li>
+					{% if page_obj.number > 3 %}<li><a>...</a></li>{% endif %}
 				{% endif %}
-			{% endfor %}
-			{% if page_obj.number < page_obj.paginator.num_pages|add:"-1" %}
-				{% if page_obj.number < page_obj.paginator.num_pages|add:"-2" %}<li><a>...</a></li>{% endif %}
-				<li><a href="{% if search %}{{ search }}&amp;{% else %}?{% endif %}page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a></li>
-			{% endif %}
-			</td></tr></ul>
+				{% for i in paginator.page_range %}
+					{% if page_obj.number == i %}
+						<li class="active"><span>{{ i }}</span></li>
+					{% else %}					
+						{% if page_obj.number >= i|add:"-1" and page_obj.number <= i|add:"1" %}
+							<li><a href="{% if search %}{{ search }}&amp;{% else %}?{% endif %}page={{ i }}">{{ i }}</a></li>
+						{% endif %}
+					{% endif %}
+				{% endfor %}
+				{% if page_obj.number < page_obj.paginator.num_pages|add:"-1" %}
+					{% if page_obj.number < page_obj.paginator.num_pages|add:"-2" %}<li><a>...</a></li>{% endif %}
+					<li><a href="{% if search %}{{ search }}&amp;{% else %}?{% endif %}page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a></li>
+				{% endif %}
+				</ul>
+			</div>
 		{% endif %}
-	    </table>
+
 {% endblock %}
 
-<footer class="container-fluid">
-  <p></p>
-</footer>

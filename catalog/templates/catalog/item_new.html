@@ -16,15 +16,17 @@
 	<div class="col-sm-12 form-group">
 		<h4><label for='id_description'>Описание</label></h4>
 		{% if form.description.errors %}
-		<div class="col-sm-12 alert alert-warning">
+		<div class="alert alert-warning">
 			{{ form.description.errors }}
 		</div>
 		{% endif %}
 		{{form.description|addcss:"form-control"}}
+		<span class="small-gray-text">Не более 100 символов</span>
 	</div>
 	<div class="col-sm-12 form-group"">
 		<h4><label for='id_comment'>Дополнительные сведения</label></h4>
-		{{form.comment|addcss:"form-control"}}
+		{{form.comment|addcss:"form-control"}}		
+		<span class="small-gray-text">Не более 1 000 символов</span>
 	</div>
 	<div class="col-sm-12 form-group"">
 		<h4><label for="id_tags">Ключевые слова</label></h4>

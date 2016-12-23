@@ -12,8 +12,8 @@ class ItemForm(forms.ModelForm):
 		model = Item
 		fields = ['description', 'comment', 'tags']
 
-	description = forms.CharField(required=False)
-	comment = forms.CharField(widget=forms.Textarea, required = False)
+	description = forms.CharField(max_length=100, required=False)
+	comment = forms.CharField(widget=forms.Textarea, required = False, max_length=1000)
 	phone = forms.CharField(max_length=25, required = False, widget=forms.TextInput(attrs={'placeholder': '+7 (999) 999 99 99'}))
 
 	def clean_description(self):
@@ -33,7 +33,7 @@ class ItemForm(forms.ModelForm):
 		r = pattern.match(phone)
 
 		if r is None:
-			raise forms.ValidationError(u'Не удается распознать номер, попробуйте так: +7 (999) 999 99 99')
+			raise forms.ValidationError(u'Не удается распознать номер, попробуйте так: 8 999 999 99 99')
 
 		return reduce(lambda x, y: x + y, r.groups())
 

@@ -2,7 +2,6 @@
 {% load account socialaccount %}
 {% providers_media_js %}
 {% load static %}
-{% load taglib %}
 
 <!DOCTYPE HTML>
 <html>
@@ -25,11 +24,14 @@
 		<span class="icon-bar"></span>
 		<span class="icon-bar"></span> 
 		</button>
-	    <a class="navbar-brand" href="/"><!-- <img src="{% static 'catalog/img/sava.png' %}" height='40'> -->Главная</a>
+	    <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-th-large"></span>&nbsp;Главная</a>
     </div>
 
     <div class="collapse navbar-collapse" id="myNavbar">
     <ul class="nav navbar-nav navbar-right">
+    	{% if request.user.is_authenticated %}
+    		<li><a href="{% url 'catalog:new_item' %}"><span class="glyphicon glyphicon-plus"></span>&nbsp;Добавить</a></li>
+    	{% endif %}
     	<li class="dropdown">
 			<a class='dropdown-toggle' data-toggle='dropdown' style="cursor:pointer;">
 				<span class="glyphicon glyphicon-globe"></span>&nbsp;{{ location.name }}
@@ -43,8 +45,6 @@
 
 			<ul class="dropdown-menu">
 			{% for place in locations %}
-				<!-- {% load taglib %}
-				{% ifchanged %}<li class='disabled'><i>{{ place.region|region_to_str }}</i></li>{% endifchanged %} -->
 				<li><a href="" onclick="document.getElementById('location').value = {{ place.id }}; document.forms[0].submit(); return false;">
 					{{ place.name }}&nbsp;{% if place.name == location.name %}<span class="glyphicon glyphicon-ok"></span>{% endif %}
 				</a></li>
@@ -61,17 +61,16 @@
 				<a href="{% provider_login_url 'vk' method='js_sdk' next=request.path %}"><img src='{% static "catalog/img/vk.png" %}' alt='VK' height="40" /></a>
 			</span></li>
 		{% else %}
+			<!-- <li><a>
+				<img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" height="auto" width="24" />
+			</a></li> -->
 			<li><a href="{% url 'catalog:my' %}">
 			<span class="glyphicon glyphicon-user"></span>
+			{% if user.socialaccount_set.all.0.get_avatar_url %}
+			{% endif %}
 			{{ request.user }}
 			<sup>{{ request.user.get_karma }}</sup>
-			</a></li>
-
-			<!-- {% if user.socialaccount_set.all.0.get_avatar_url %}
-			<li><a>
-				<img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" height="auto" width="24" />
-			</a></li>
-			{% endif %} -->
+			</a></li>			
 
 			<li><a href='/accounts/logout'>Выход&nbsp;<span class="glyphicon glyphicon-log-out"></span></a></li>
 		{% endif %}
@@ -83,14 +82,22 @@
 <div class="container-fluid">
   <div class="row content">
     <div class="col-sm-3 sidenav">
-    {% block sidebar %}{% endblock %}
+	  	<div class="col-sm-11">
+	  		{% block sidebar %}{% endblock %}
+	  	</div>  	
+	  	<div class="col-sm-1"></div>    
     </div>
 
     <div class="col-sm-6">
 	    {% block main %}{% endblock %}
     </div>
+    <div class="col-sm-1"></div>
   </div>
 </div>
+
+<footer class="container-fluid">
+  <p></p>
+</footer>
 
 </body>
 </html>
