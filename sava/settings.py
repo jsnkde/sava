@@ -24,6 +24,7 @@ SECRET_KEY = 'rw!(!_j12r9cysmm49e*8dtn^(e85uf#l!cjr&yf#spx2nw7y+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+THUMBNAIL_DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -34,6 +35,8 @@ SITE_ID = '3'
 INSTALLED_APPS = [
     'catalog',
     'taggit',
+    'sorl.thumbnail',
+    'django_cleanup',
 
     # Social auth
     'django.contrib.sites',

@@ -3,8 +3,9 @@
 import re
 
 from django import forms
+from django.forms.models import inlineformset_factory
 from django.core.validators import RegexValidator
-from catalog.models import Item
+from catalog.models import Item, Image
 
 
 class ItemForm(forms.ModelForm):
@@ -36,6 +37,14 @@ class ItemForm(forms.ModelForm):
 			raise forms.ValidationError(u'Не удается распознать номер, попробуйте так: 8 999 999 99 99')
 
 		return reduce(lambda x, y: x + y, r.groups())
+
+class ImageForm(forms.ModelForm):
+	class Meta:
+		model = Image
+		fields = ['img',]
+
+
+ImageFormset = inlineformset_factory(Item, Image, max_num=5, extra=5, form=ImageForm)
 
 
 def tag_splitter(tag_string):

@@ -8,10 +8,11 @@
 {% block main %} 
 
 {% load taglib %}
+{% load thumbnail %}
 
 <div class="container-fluid">
 
-<form action="{{ request.path }}" method="post">
+<form action="{{ request.path }}" method="post" enctype="multipart/form-data" >
     {% csrf_token %}
 	<div class="col-sm-12 form-group">
 		<h4><label for='id_description'>Описание</label></h4>
@@ -40,7 +41,38 @@
 			{{ form.phone.errors }}
 		</div>
 		{% endif %}
-		<div class="col-sm-3 row">{{form.phone|addcss:"form-control"}}</div>
+		<div class="col-sm-6 row">{{form.phone|addcss:"form-control"}}</div>
+	</div>
+
+<script type="text/javascript">
+	function get_file_name(val){
+		var file = document.getElementById(val).value;
+		document.getElementById('fn_' + val).innerHTML = file;
+	}
+</script>
+
+	<div class="col-sm-12 form-group">
+		<h4><label for="id_images">Изображения</label></h4>
+		<div id="id_images">
+		{{ image_formset.management_form }}
+		{% for imf in image_formset%}
+			<div>
+				{{ imf.id }}
+				{% if imf.img.value %}
+					<div class="checkbox-inline">
+						<label>{{ imf.DELETE }} Удалить</label>
+					</div>
+					<div>
+						<img src="{{imf.img.value.url}}" width="250" class="img-responsive">
+					</div>
+				{% else %}		
+					<label for="{{ imf.img.id_for_label }}" class="btn btn-default">Выбрать файл</label> {{ imf.img|img_selector:imf.img.id_for_label }}
+					<div class="fname" id="fn_{{ imf.img.id_for_label }}"></div>
+				{% endif %}		
+				<hr>			
+			</div>
+		{% endfor %}
+		</div>
 	</div>
 
 	<div class="col-sm-12">

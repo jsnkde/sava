@@ -6,6 +6,7 @@ from django.db import models
 from django.db.models.aggregates import Count, Sum
 from django.contrib.auth.models import AbstractUser
 from taggit.managers import TaggableManager
+from sorl.thumbnail import ImageField
 
 
 class AbstractClass(models.Model):
@@ -159,7 +160,7 @@ class User(AbstractUser):
 	def give_karma(self, usr):
 		if self == usr:
 			return
-			
+
 		if not self.giver.filter(owner=usr).exists():
 			self.giver.create(owner=usr, giver=self, value=1)
 
@@ -184,4 +185,15 @@ class Item(AbstractClass):
 
 	def __unicode__(self):
 		return self.description[:40]
+
+
+def image_upload_path(instance, filename):
+	return 'user_{0}/{1}'.format(instance.item.user.id, filename)
+
+class Image(models.Model):
+	item = models.ForeignKey(Item, on_delete=models.CASCADE)
+	img = ImageField(upload_to=image_upload_path)
+
+	def __unicode__(self):
+		return unicode(self.img)
 

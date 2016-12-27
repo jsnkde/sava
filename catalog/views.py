@@ -8,10 +8,11 @@ from django.urls import reverse
 from django.db.models import Q, Case, When, IntegerField
 from django.db.models.aggregates import Count
 from allauth.account.adapter import DefaultAccountAdapter
+from django.db.models.fields.files import ImageFieldFile
 from taggit.models import Tag
 
-from catalog.models import Location, User, Item, Karma
-from catalog.forms import ItemForm
+from catalog.models import Location, User, Item, Karma, Image
+from catalog.forms import ItemForm, ImageFormset
 
 
 class NavbarMixin(object):
@@ -125,6 +126,33 @@ class PhoneFormatMixin(object):
 
 		return init
 
+	def get_context_data(self, **kwargs):
+		context = super(PhoneFormatMixin, self).get_context_data(**kwargs)
+		
+		if self.request.POST:
+			context['image_formset'] = ImageFormset(self.request.POST, self.request.FILES, instance=self.object)
+
+		else:
+			context['image_formset'] = ImageFormset(instance=self.object)
+
+		return context
+
+	def form_valid(self, form):
+		context = self.get_context_data()
+
+		self.request.user.phone = form.cleaned_data['phone']
+		self.request.user.save()
+
+		for imf in context['image_formset'].cleaned_data:
+			if imf.has_key('img') and not isinstance(imf['img'], ImageFieldFile):				
+				Image.objects.create(item=self.object, img=imf['img'])
+
+			if imf.has_key("DELETE") and imf['id'] is not None and imf['DELETE'] is True:
+				imf['id'].delete() 
+
+				
+		return super(PhoneFormatMixin, self).form_valid(form)
+
 
 class ItemCreateView(PhoneFormatMixin, NavbarMixin, generic.edit.CreateView):
 	template_name = 'catalog/item_new.html'
@@ -132,11 +160,9 @@ class ItemCreateView(PhoneFormatMixin, NavbarMixin, generic.edit.CreateView):
 	form_class = ItemForm
 
 	def form_valid(self, form):
-		item = form.save(commit=False)
-		item.user = self.request.user
-
-		self.request.user.phone = form.cleaned_data['phone']
-		self.request.user.save()
+		self.object = form.save(commit=False)
+		self.object.user = self.request.user
+		self.object.save()
 
 		return super(ItemCreateView, self).form_valid(form)
 
@@ -171,12 +197,6 @@ class ItemUpdateView(PhoneFormatMixin, NavbarMixin, generic.edit.UpdateView):
 
 	def get_success_url(self):
 		return reverse('catalog:index')
-
-	def form_valid(self, form):
-		self.request.user.phone = form.cleaned_data['phone']
-		self.request.user.save()
-
-		return super(ItemUpdateView, self).form_valid(form)
 
 
 class SocialAccountAdapter(DefaultAccountAdapter):

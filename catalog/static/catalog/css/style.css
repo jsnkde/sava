@@ -34,3 +34,14 @@
   color: #778899;
   font-size: smaller;
 }
+
+.fname{
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.carousel-inner > .item > img,
+  .carousel-inner > .item > a > img {
+      width: 70%;
+      margin: auto;
+  }
