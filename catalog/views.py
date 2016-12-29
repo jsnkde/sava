@@ -79,7 +79,7 @@ class IndexView(NavbarMixin, generic.ListView):
 		# Find items with description or tags containing any word from the search string
 		if self.request.GET.has_key('search') and len(self.request.GET['search']) > 0:
 			search = map(unicode.lower, re.findall(r'(\w+)', self.request.GET['search'], re.UNICODE))
-			items = items.filter(Q(tags__name__in=search) | Q(reduce(lambda x, y: x | y, [Q(description__icontains=word) for word in search]))).distinct()
+			items = items.filter(Q(reduce(lambda x, y: x | y, [Q(tags__name__icontains=word) for word in search])) | Q(reduce(lambda x, y: x | y, [Q(description__icontains=word) for word in search]))).distinct()
 
 		return items.order_by('-updated')
 
@@ -89,7 +89,7 @@ class IndexView(NavbarMixin, generic.ListView):
 
 		# Pass search GET parameters for proper pagination
 		if self.request.GET.has_key('search') and len(self.request.GET['search']) > 0:
-			context['search'] = "?search=" + self.request.GET['search']
+			context['search'] = self.request.GET['search']
 
 		return context
 
