@@ -1,15 +1,16 @@
+import re
+
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.core.exceptions import PermissionDenied
 from django.views import generic, View
-import re
-
 from django.urls import reverse
 from django.db.models import Q, Case, When, IntegerField
 from django.db.models.aggregates import Count
-from allauth.account.adapter import DefaultAccountAdapter
 from django.db.models.fields.files import ImageFieldFile
+
 from taggit.models import Tag
+from allauth.account.adapter import DefaultAccountAdapter
 
 from catalog.models import Location, User, Item, Karma, Image
 from catalog.forms import ItemForm, ImageFormset
@@ -121,7 +122,7 @@ class PhoneFormatMixin(object):
 	def get_initial(self):
 		init = {}
 
-		if self.request.user.phone and len(self.request.user.phone) > 0:
+		if self.request.user.is_authenticated() and self.request.user.phone and len(self.request.user.phone) > 0:
 			init['phone'] = self.request.user.phone_formatted
 
 		return init
@@ -158,6 +159,12 @@ class ItemCreateView(PhoneFormatMixin, NavbarMixin, generic.edit.CreateView):
 	template_name = 'catalog/item_new.html'
 	model = Item
 	form_class = ItemForm
+
+	def get(self, request, *args, **kwargs):
+		if request.user.is_anonymous():
+			raise PermissionDenied
+
+		return super(ItemCreateView, self).get(request, *args, **kwargs)
 
 	def form_valid(self, form):
 		self.object = form.save(commit=False)
